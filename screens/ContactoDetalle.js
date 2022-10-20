@@ -1,19 +1,24 @@
 import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../database/firebase.js";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Alert,
   ActivityIndicator,
-  useWindowDimensions,
+  Dimensions,
   ScrollView,
+  Image,
 } from "react-native";
 import { Button } from "@rneui/themed";
 import Formulario from "../components/Formulario.js";
+import { UserContext } from "../context/UserContext";
+import fondo from "../assets/fondo3.jpg";
 
+const heightY = Dimensions.get("window").height;
 const ContactoDetalle = (props) => {
+  const { user, setUser } = useContext(UserContext);
   const [persona, setPersona] = useState({
     Apellido: "",
     Nombre: "",
@@ -27,7 +32,7 @@ const ContactoDetalle = (props) => {
   const [loading, setLoading] = useState(true);
 
   const getPersonaById = async (id) => {
-    const docRef = doc(db, "Personal", id);
+    const docRef = doc(db, user, id);
     await getDoc(docRef).then((doc) => {
       const persona = doc.data();
       setPersona({
@@ -42,7 +47,7 @@ const ContactoDetalle = (props) => {
   const borrarPersona = async () => {
     try {
       setLoading(true);
-      const docRef = doc(db, "Personal", props.route.params.personaId);
+      const docRef = doc(db, user, props.route.params.personaId);
       await deleteDoc(docRef);
       setLoading(false);
       Alert.alert("", "Borrado");
@@ -77,7 +82,8 @@ const ContactoDetalle = (props) => {
       Alert.alert("", "Complete todos los campos");
     } else
       try {
-        const docRef = doc(db, "Personal", props.route.params.personaId);
+        setLoading(true);
+        const docRef = doc(db, user, props.route.params.personaId);
         const data = {
           Apellido: persona.Apellido,
           Nombre: persona.Nombre,
@@ -100,7 +106,6 @@ const ContactoDetalle = (props) => {
   useEffect(() => {
     getPersonaById(props.route.params.personaId);
   }, []);
-  const { height, width } = useWindowDimensions();
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -111,11 +116,10 @@ const ContactoDetalle = (props) => {
 
   return (
     <>
+      <Image source={fondo} style={[styles.image, StyleSheet.absoluteFill]} />
       <ScrollView style={styles.container}>
         <Text style={styles.titulo}>DETALLE CONTACTO</Text>
-        <Formulario 
-        persona={persona}
-        setPersona={setPersona} />
+        <Formulario persona={persona} setPersona={setPersona} />
         <View style={styles.buttton}>
           <Button
             containerStyle={styles.buttton}
@@ -140,17 +144,16 @@ const ContactoDetalle = (props) => {
 };
 
 const styles = StyleSheet.create({
-  fechaDb: {
-    position: "absolute",
-    marginTop: 0,
-    textAlign: "right",
+  image: {
     width: "100%",
-    fontSize: 16,
+    height: "100%",
+    resizeMode: "cover",
+    opacity: 0.3,
   },
   titulo: {
     marginTop: 20,
     alignItems: "center",
-    fontSize: 30,
+    fontSize: heightY * 0.04,
     justifyContent: "center",
     textAlign: "center",
     color: "blue",
@@ -168,54 +171,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  formulario: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 20,
-    width: "49%",
-    alignContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    textAlignVertical: "center",
-    minHeight: 60,
-  },
-
-  input2: {
-    height: 50,
-    borderWidth: 0.5,
-    padding: 10,
-    minWidth: "49%",
-    fontSize: 15,
-    borderRadius: 10,
-    textAlign: "center",
-  },
-  input3: {
-    height: 60,
-    borderWidth: 0.5,
-    padding: 10,
-    width: "49%",
-    fontSize: 15,
-    borderRadius: 10,
-    marginTop: 10,
-    textAlign: "center",
-  },
   buttton: {
     width: "88%",
     alignContent: "center",
     marginTop: 10,
     marginStart: 25,
     borderRadius: 15,
-  },
-  dropdown: {
-    alignItems: "center",
-    borderWidth: 0.5,
-    borderColor: "#444",
-    borderRadius: 10,
-    width: "49%",
-    alignContent: "center",
-    marginTop: 10,
   },
 });
 

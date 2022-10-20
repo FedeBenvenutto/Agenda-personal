@@ -6,11 +6,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import VerAgenda from "./screens/VerAgenda";
 import NuevoContacto from "./screens/NuevoContacto";
 import ContactoDetalle from "./screens/ContactoDetalle";
+import { UserContext, UserProvider } from "./context/UserContext";
+import Login from "./screens/Login";
+
 
 const Stack = createStackNavigator();
 function MyStack() {
-  // const {user} = useContext(UserContext)
-  // if (!user) { return <Login />}
+  const {user} = useContext(UserContext)
+  if (!user) { return <Login />}
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -34,11 +37,11 @@ function MyStack() {
 
 export default function App() {
   return (
-    // <UserProvider >
-    // <FechaProvider>
+    <UserProvider >
     <NavigationContainer>
       <MyStack /> 
     </NavigationContainer>
+    </UserProvider>
 
   );
 }

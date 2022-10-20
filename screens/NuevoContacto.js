@@ -4,17 +4,22 @@ import {
   Text,
   StyleSheet,
   Alert,
-  useWindowDimensions,
+  Dimensions,
   ScrollView,
+  Image,
 } from "react-native";
 import { Button } from "@rneui/themed";
 import { db } from "../database/firebase.js";
 import { addDoc, collection } from "firebase/firestore";
 import Toast from "react-native-toast-message";
 import Formulario from "../components/Formulario.js";
+import fondo from "../assets/fondo3.jpg";
+import { UserContext } from "../context/UserContext";
 
+const heightY = Dimensions.get("window").height;
 const NuevoContacto = (props) => {
-  const { height, width } = useWindowDimensions();
+  const { user, setUser } = useContext(UserContext);
+
   const [TotalPersona, setTotalPersona] = useState(
     Number(props.route.params.TotalPersonas) + 1
   );
@@ -57,7 +62,7 @@ const NuevoContacto = (props) => {
           Trabajando: false,
           Comentario: "",
         });
-        const docRef = await addDoc(collection(db, "Personal"), {
+        const docRef = await addDoc(collection(db, user), {
           Apellido: nuevaPersona.Apellido,
           Nombre: nuevaPersona.Nombre,
           Telefono: nuevaPersona.Telefono,
@@ -77,18 +82,13 @@ const NuevoContacto = (props) => {
 
   return (
     <>
+      <Image source={fondo} style={[styles.image, StyleSheet.absoluteFill]} />
       <ScrollView style={styles.container}>
         <Text style={styles.titulo}>INGRESO NUEVO CONTACTO</Text>
-        <Formulario 
-        persona={persona}
-        setPersona={setPersona} />
+        <Formulario persona={persona} setPersona={setPersona} />
         <View style={styles.buttton}>
           {loading ? (
-            <Button
-              containerStyle={styles.buttton}
-              loading
-              disabled
-            />
+            <Button containerStyle={styles.buttton} loading disabled />
           ) : (
             <Button
               containerStyle={styles.buttton}
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   titulo: {
     marginTop: 20,
     alignItems: "center",
-    fontSize: 30,
+    fontSize: heightY * 0.039,
     justifyContent: "center",
     textAlign: "center",
     color: "#7c917f",
@@ -123,6 +123,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginStart: 25,
     borderRadius: 15,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    opacity: 0.3,
   },
 });
 

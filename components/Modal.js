@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Linking,
   Image,
+  Dimensions,
 } from "react-native";
 import llamada from "../assets/llamada.png";
 
+const heightY = Dimensions.get("window").height;
 export default function MyModal({
   isModalOpen,
   setIsModalOpen,
@@ -81,19 +83,20 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    fontSize: 16,
+    fontSize: heightY * 0.023,
     marginTop: 10,
     color: "white",
   },
   text2: {
-    fontSize: 26,
+    fontSize: heightY * 0.035,
     marginTop: 10,
     fontWeight: "500",
     marginBottom: 10,
     color: "white",
+    textAlign: "center",
   },
   text3: {
-    fontSize: 18,
+    fontSize: heightY * 0.026,
     marginTop: 20,
     fontWeight: "500",
     marginBottom: 10,
